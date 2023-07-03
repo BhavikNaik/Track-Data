@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Page</title>
+</head>
+<body>
+    <h1>Data Table</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Bid Price</th>
+                <th>Bid Quantity</th>
+                <th>Last Traded Price (LTP)</th>
+                <th>Last Traded Quantity</th>
+                <th>Sequence Number</th>
+                <th>Timestamp</th>
+                <th>Trading Symbol</th>
+                <th>Volume</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+            <tr>
+                <td>{{ item['Bid Price'] }}</td>
+                <td>{{ item['Bid Quantity'] }}</td>
+                <td>{{ item['Last Traded Price (LTP)'] }}</td>
+                <td>{{ item['Last Traded Quantity'] }}</td>
+                <td>{{ item['Sequence Number'] }}</td>
+                <td>{{ item['Timestamp'] }}</td>
+                <td>{{ item['Trading Symbol'] }}</td>
+                <td>{{ item['Volume'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
