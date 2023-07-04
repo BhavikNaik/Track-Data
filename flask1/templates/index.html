@@ -1,10 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Flask App</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Chain Display</title>
+    <link rel="stylesheet" href="static\style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
 </head>
+
 <body>
-    <h1>Welcome to the Flask App</h1>
-    <p>Go to <a href="data.html">Data Page</a></p>
+
+    <!-- for header part -->
+    <header>
+
+        <div class="logosec">
+            <img src="static\Untitled-design-(30).png" class="icn menuicn" id="menuicn" alt="menu-icon">
+            <div class="logo">Option Chain</div>
+
+        </div>
+
+        <div class="message">
+            <div class="circle"></div>
+            <img src="static\8.png" class="icn" alt="">
+            <div class="dp">
+                <img src="static\profile-removebg-preview.png" class="dpicn" alt="dp">
+            </div>
+        </div>
+
+    </header>
+
+    <div class="main-container">
+        <div class="navcontainer">
+            <nav class="nav">
+                <div class="nav-upper-options">
+                    <div class="nav-option option1">
+                        <img src="static\Untitled-design-(29).png" class="nav-img" alt="dashboard">
+                        <h3> DASHBOARD</h3>
+                    </div>
+
+                    <div class="option2 nav-option">
+                        <img src="static\9.png" class="nav-img" alt="articles">
+                        <h3> CHART</h3>
+                    </div>
+
+                    <div class="nav-option option3">
+                        <img src="static\5.png" class="nav-img" alt="report">
+                        <h3> Settings</h3>
+                    </div>
+
+                    <div class="nav-option option4">
+                        <img src="static\6.png" class="nav-img" alt="institution">
+                        <h3> OPTIONS</h3>
+                    </div>
+
+                    <div class="nav-option logout">
+                        <img src="static\7.png" class="nav-img" alt="logout">
+                        <h3>Logout</h3>
+                    </div>
+
+                </div>
+            </nav>
+        </div>
+        <div class="main">
+
+            <h1>Real-Time Data</h1>
+            <!-- <div class="dropdown">
+                <select id="symbol-dropdown" onchange="updateData()">
+                    <option value="ALLBANKS" selected>ALLBANKS</option>
+                    <option value="MAINIDX">MAINIDX</option>
+                    <option value="FINANCIALS">FINANCIAL</option>
+                    <option value="MIDCAPS">MIDCAP</option>
+                </select>
+            </div> -->
+            <table id="data-table" border="1">
+                <thead>
+                    <tr>
+                        <th>Trading Symbol</th>
+                        <th>Last Traded Price (LTP)</th>
+                        <th>Sequence Number</th>
+                        <th>Bid Price</th>
+                        <th>Bid Quantity</th>
+                        <th>Last Traded Quantity</th>
+                        <th>Date</th>
+                        <th>Volume</th>
+                        <th>Ask Price</th>
+                        <th>Ask Quantity</th>
+                        <th>Open Interest</th>
+                        <th>Previous Close Price</th>
+                        <th>Previous Open Interest</th>
+
+                        <!-- Add more table headers for other fields if needed -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        <td>{{ row['Trading Symbol'] }}</td>
+                        <td>{{ row['Last Traded Price (LTP)'] }}</td>
+                        <td>{{ row['Sequence Number'] }}</td>
+                        <td>{{ row['Bid Price'] }}</td>
+                        <td>{{ row['Bid Quantity'] }}</td>
+                        <td>{{ row['Last Traded Quantity'] }}</td>
+                        <td>{{ row['Timestamp'] }}</td>
+                        <td>{{ row['Volume'] }}</td>
+                        <td>{{ row['Ask Price'] }}</td>
+                        <td>{{ row['Ask Quantity'] }}</td>
+                        <td>{{ row['Open Interest'] }}</td>
+                        <td>{{ row['Previous Close Price'] }}</td>
+                        <td>{{ row['Previous Open Interest'] }}</td>
+                        <!-- Add more table cells for other fields if needed -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <script>
+                function updateData() {
+                    var selectedSymbol = $('#symbol-dropdown').val();
+                    $.getJSON('/', function(data) {
+                        var tableBody = $('#data-table tbody');
+                        tableBody.empty(); // Clear existing rows
+
+                        $.each(data.data, function(index, row) {
+                            var tr = $('<tr>');
+                            tr.append('<td>' + row['Trading Symbol'] + '</td>');
+                            tr.append('<td>' + row['Last Traded Price (LTP)'] + '</td>');
+                            tr.append('<td>' + row['Sequence Number'] + '</td>');
+                            tr.append('<td>' + row['Bid Price'] + '</td>');
+                            tr.append('<td>' + row['Bid Quantity'] + '</td>');
+                            tr.append('<td>' + row['Last Traded Quantity'] + '</td>');
+                            tr.append('<td>' + row['Timestamp'] + '</td>');
+                            tr.append('<td>' + row['Volume'] + '</td>');
+                            tr.append('<td>' + row['Ask Price'] + '</td>');
+                            tr.append('<td>' + row['Ask Quantity'] + '</td>');
+                            tr.append('<td>' + row['Open Interest'] + '</td>');
+                            tr.append('<td>' + row['Previous Close Price'] + '</td>');
+                            tr.append('<td>' + row['Previous Open Interest'] + '</td>');
+
+                            // Add more table cells for other fields if needed
+                            tableBody.append(tr);
+                        });
+                    });
+                }
+
+                setInterval(updateData, 5000); // Update data every 5 seconds
+
+                // Initial data load
+                updateData();
+            </script>
+        </div>
+    </div>
 </body>
+
 </html>

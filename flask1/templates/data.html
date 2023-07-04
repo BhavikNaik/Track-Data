@@ -1,37 +1,234 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Data Page</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Chain Display</title>
+    <link rel="stylesheet" href="static\style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
 </head>
+
 <body>
-    <h1>Data Table</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Bid Price</th>
-                <th>Bid Quantity</th>
-                <th>Last Traded Price (LTP)</th>
-                <th>Last Traded Quantity</th>
-                <th>Sequence Number</th>
-                <th>Timestamp</th>
-                <th>Trading Symbol</th>
-                <th>Volume</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in data %}
-            <tr>
-                <td>{{ item['Bid Price'] }}</td>
-                <td>{{ item['Bid Quantity'] }}</td>
-                <td>{{ item['Last Traded Price (LTP)'] }}</td>
-                <td>{{ item['Last Traded Quantity'] }}</td>
-                <td>{{ item['Sequence Number'] }}</td>
-                <td>{{ item['Timestamp'] }}</td>
-                <td>{{ item['Trading Symbol'] }}</td>
-                <td>{{ item['Volume'] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    <!-- for header part -->
+    <header>
+
+        <div class="logosec">
+            <img src="static\Untitled-design-(30).png" class="icn menuicn" id="menuicn" alt="menu-icon">
+            <div class="logo">Option Chain</div>
+
+        </div>
+
+        <div class="message">
+            <div class="circle"></div>
+            <img src="static\8.png" class="icn" alt="">
+            <div class="dp">
+                <img src="static\profile-removebg-preview.png" class="dpicn" alt="dp">
+            </div>
+        </div>
+
+    </header>
+
+    <div class="main-container">
+        <div class="navcontainer">
+            <nav class="nav">
+                <div class="nav-upper-options">
+                    <div class="nav-option option1">
+                        <img src="static\Untitled-design-(29).png" class="nav-img" alt="dashboard">
+                        <h3> DASHBOARD</h3>
+                    </div>
+
+                    <div class="option2 nav-option">
+                        <img src="static\9.png" class="nav-img" alt="articles">
+                        <h3> CHART</h3>
+                    </div>
+
+                    <div class="nav-option option3">
+                        <img src="static\5.png" class="nav-img" alt="report">
+                        <h3> Settings</h3>
+                    </div>
+
+                    <div class="nav-option option4">
+                        <img src="static\6.png" class="nav-img" alt="institution">
+                        <h3> OPTIONS</h3>
+                    </div>
+
+                    <div class="nav-option logout">
+                        <img src="static\7.png" class="nav-img" alt="logout">
+                        <h3>Logout</h3>
+                    </div>
+
+                </div>
+            </nav>
+        </div>
+        <div class="main">
+
+            <h1>Real-Time Data</h1>
+            <!-- <div class="dropdown">
+                <select id="symbol-dropdown" onchange="updateData()">
+                    <option value="ALLBANKS" selected>ALLBANKS</option>
+                    <option value="MAINIDX">MAINIDX</option>
+                    <option value="FINANCIALS">FINANCIAL</option>
+                    <option value="MIDCAPS">MIDCAP</option>
+                </select>
+            </div> -->
+            <form action="/data" method="post">
+                <label for="symbol">Symbol:</label>
+                <select name="symbol" id="symbol">
+                    <option value="ALLBANKS" {% if selected_symbol == 'ALLBANKS' %}selected{% endif %}>ALLBANKS</option>
+                    <option value="MAINIDX" {% if selected_symbol == 'MAINIDX' %}selected{% endif %}>mainidx</option>
+                    <option value="FINANCIALS" {% if selected_symbol == 'FINANCIALS' %}selected{% endif %}>FINANCIAL</option>
+                    <option value="MIDCAPS" {% if selected_symbol == 'MIDCAPS' %}selected{% endif %}>MIDCAP</option>
+                    <!-- Add more options for symbols as needed -->
+                </select>
+                <label for="expiry">PUT or CALL:</label>
+                <select name="expiry" id="expiry">
+                    <option value="CE"{% if selected_expiry == 'CE' %}selected{% endif %}>CE</option>
+                    <option value="PE" {% if selected_expiry == 'PE' %}selected{% endif %}>PE</option>
+                    <!-- Add more options for expiry as needed -->
+                </select>
+                <!-- <label for="quantity">All available Expiry:</label>
+                <select name="quantity" id="quantity">
+                    {% for quantity in quantities %}
+                      <option value="{{ quantity }}">{{ quantity }}</option>
+                    {% endfor %}
+                  </select> -->
+                <input type="submit" value="Submit">
+            </form>
+            <table id="data-table" border="1">
+                <thead>
+                    <tr>
+                        <th>Expiry Date</th>
+                        <th>Last Traded Price (LTP)</th>
+                        <th>Sequence Number</th>
+                        <th>Bid Price</th>
+                        <th>Bid Quantity</th>
+                        <th>Last Traded Quantity</th>
+                        <th>Sum</th>
+                        <!-- <th>Timestamp</th>
+                        <th>Volume</th>
+                        <th>Ask Price</th>
+                        <th>Ask Quantity</th>
+                        <th>Open Interest</th>
+                        <th>Previous Close Price</th>
+                        <th>Previous Open Interest</th> -->
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        
+                        <td>{{ row['Trading Symbol'] }}</td>
+                        <td>{{ row['Last Traded Price (LTP)'] }}</td>
+                        <td>{{ row['Sequence Number'] }}</td>
+                        <td>{{ row['Bid Price'] }}</td>
+                        <td>{{ row['Bid Quantity'] }}</td>
+                        <td>{{ row['Last Traded Quantity'] }}</td>
+                        {% set symbol = row['Trading Symbol'] %}
+                        {% set start_index = symbol.find('0') %}
+                        {% if start_index == -1 or symbol.find('1') < start_index %}
+                            {% set start_index = symbol.find('1') %}
+                        {% endif %}
+                        {% if start_index == -1 or symbol.find('2') < start_index %}
+                            {% set start_index = symbol.find('2') %}
+                        {% endif %}
+                        {% if start_index == -1 or symbol.find('3') < start_index %}
+                            {% set start_index = symbol.find('3') %}
+                        {% endif %}
+                        {% if start_index != -1 %}
+                            {% set end_index = start_index + 7 %}
+                            <td>{{ symbol[start_index:end_index] }}</td>
+                        {% else %}
+                            <td>N/A</td>
+                        {% endif %}
+                        <!-- <td>{{ row['Timestamp'] }}</td>
+                        <td>{{ row['Volume'] }}</td>
+                        <td>{{ row['Ask Price'] }}</td>
+                        <td>{{ row['Ask Quantity'] }}</td>
+                        <td>{{ row['Open Interest'] }}</td>
+                        <td>{{ row['Previous Close Price'] }}</td>
+                        <td>{{ row['Previous Open Interest'] }}</td> -->
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <script>
+                function updateData(symbol, expiry) {
+                    //var selectedSymbol = $('#symbol-dropdown').val();
+                    //var selectedSymbol = $('#symbol-dropdown').val();
+                    $.getJSON('/data',{symbol: symbol, expiry: expiry}, function(data) {
+                        var tableBody = $('#data-table tbody');
+                        tableBody.empty(); // Clear existing rows
+
+                        $.each(data.data, function(index, row) {
+                            var tr = $('<tr>');
+                            tr.append('<td>' + row['Trading Symbol'] + '</td>');
+                            tr.append('<td>' + row['Last Traded Price (LTP)'] + '</td>');
+                            tr.append('<td>' + row['Sequence Number'] + '</td>');
+                            tr.append('<td>' + row['Bid Price'] + '</td>');
+                            tr.append('<td>' + row['Bid Quantity'] + '</td>');
+                            tr.append('<td>' + row['Last Traded Quantity'] + '</td>');
+                            // tr.append('<td>' + row['Timestamp'] + '</td>');
+                            // tr.append('<td>' + row['Volume'] + '</td>');
+                            // tr.append('<td>' + row['Ask Price'] + '</td>');
+                            // tr.append('<td>' + row['Ask Quantity'] + '</td>');
+                            // tr.append('<td>' + row['Open Interest'] + '</td>');
+                            // tr.append('<td>' + row['Previous Close Price'] + '</td>');
+                            // tr.append('<td>' + row['Previous Open Interest'] + '</td>');
+
+                            var askPrice = parseFloat(row['Bid Price']);
+                            var askQuantity = parseFloat(row['Bid Quantity']);
+                            var sum = askPrice + askQuantity;
+
+                            // Add the sum to a new column
+                            tr.append('<td>' + sum + '</td>');
+                            tableBody.append(tr);
+                        });
+                    });
+                }
+
+                function calculateAndDisplaySum(askPrice, askQuantity) {
+                    // Calculate the sum of ask price and ask quantity
+                    var sum = parseFloat(askPrice) + parseFloat(askQuantity);
+                    
+                    // Get the table body
+                    var tableBody = $('#data-table tbody');
+                    
+                    // Iterate through each row in the table body
+                    tableBody.find('tr').each(function() {
+                        var row = $(this);
+                        
+                        // Get the existing values from the row
+                        var existingAskPrice = parseFloat(row.find('.bid-price').text());
+                        var existingAskQuantity = parseFloat(row.find('.bid-quantity').text());
+                        
+                        // Calculate the new total by adding the existing and new values
+                        var newTotal = existingAskPrice + existingAskQuantity + sum;
+                        
+                        // Append the new total as a new cell in the row
+                        row.append('<td>' + newTotal + '</td>');
+                    });
+                    }
+
+                setInterval(function(){
+                    var selectedSymbol = $('#symbol').val();
+                    var selectedExpiry = $('#expiry').val();
+                    updateData(selectedSymbol, selectedExpiry);
+                }, 5000); // Update data every 5 seconds
+
+                // Initial data load
+                var initialSymbol = $('#symbol').val();
+                var initialExpiry = $('#expiry').val();
+                updateData(initialSymbol, initialExpiry);
+            </script>
+        </div>
+    </div>
 </body>
+
 </html>
