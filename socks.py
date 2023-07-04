@@ -3,7 +3,7 @@ import struct
 import pandas as pd
 
 # Define the field structure
-fields = [
+allData = [
     ("Packet Length", "I", 0, 4),
     ("Trading Symbol", "30s", 4, 30),
     ("Sequence Number", "q", 34, 8),
@@ -20,16 +20,15 @@ fields = [
     ("Previous Open Interest", "q", 122, 8)
 ]
 
-# Socket configuration
-socket_address = '0.0.0.0.0.0.0.1'  # Replace with the actual socket address
-port = 5001  # Replace with the actual port number
+SOCK_ADD = '0.0.0.0.0.0.0.1'  # Replace with the actual socket address
+PORT = 5001  # Replace with the actual port number
 
 # Create a socket object
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Send the data packet to the server
-sock.connect(('127.0.0.1', port))
-sock.send("Hello".encode())
+sock.connect(('127.0.0.1', PORT))
+sock.send("working?".encode())
 
 # Receive and process data continuously
 data_dict = {}
@@ -43,7 +42,7 @@ while True:
 
     # Process the packet and extract fields
     field_values = {}
-    for field in fields[1:9]:  # Extracting the desired fields
+    for field in allData[1:9]:  # Extracting the desired fields
         field_name, data_type, offset, length = field
         field_data = struct.unpack(data_type, packet_data[offset:offset+length])[0]
 
@@ -62,11 +61,8 @@ while True:
         # Add a new entry
         data_dict[trading_symbol] = field_values
 
-    # Convert the dictionary to a DataFrame and store the values
+    # Converting the dictionary to a DataFrame and storing the values and then converting to csv file
     df = pd.DataFrame(data_dict.values())
+    df.to_csv('./flask1/output.csv', index=False)  
 
-    # Save the DataFrame as a CSV file
-    df.to_csv('./flask1/output.csv', index=False)  # Provide the desired file path and name
-
-# Close the socket
 sock.close()
